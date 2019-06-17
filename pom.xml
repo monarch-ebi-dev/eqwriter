@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ebi.monarch</groupId>
+    <artifactId>eqwriter</artifactId>
+    <version>1.0</version>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+    <!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-distribution -->
+    <dependency>
+        <groupId>net.sourceforge.owlapi</groupId>
+        <artifactId>owlapi-distribution</artifactId>
+        <version>4.5.1</version>
+    </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>eq-writer</id>
+                        <!-- bind to the packaging phase -->
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>ebi.monarch.eqwriter.EQWriter
+                                    </mainClass>
+                                </manifest>
+                            </archive>
+                            <finalName>eq-writer</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
