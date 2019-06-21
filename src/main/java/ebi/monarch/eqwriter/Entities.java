@@ -30,4 +30,7 @@ public class Entities {
     public static final OWLObjectProperty connected_to = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002150"));
     public static final OWLObjectProperty fasciculates_with = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002101"));
 
+    public static final OWLObjectProperty expresses = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002292"));
+
+
 }

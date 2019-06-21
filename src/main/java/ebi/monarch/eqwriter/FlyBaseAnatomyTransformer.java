@@ -17,8 +17,14 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
 
     @Override
     public String createDefinition(OWLClassExpression ce) {
-
-        return "Any "+ren.renderHumanReadable(ce).replaceFirst(" and "," that ");
+        String def = ren.renderHumanReadable(ce);
+        def = def.replaceFirst(" and "," that ");
+        for(OWLClass c:ce.getClassesInSignature()) {
+            String clabel = ren.getLabel(c);
+            def = def.replace(clabel,clabel+" ("+c.getIRI().getShortForm().replaceAll("_",":")+")");
+        }
+        def = ren.dropSomeFromDefinition(def,ce.getObjectPropertiesInSignature());
+        return "Any "+def;
     }
 
     private void prepareLabels(Map<OWLEntity, String> labels) {
@@ -34,5 +40,6 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
         ren.updateLabel(Entities.fasciculates_with,"fasciculates with");
         ren.updateLabel(Entities.releases_neurotransmitter,"releases as a neurotransmitter");
         ren.updateLabels(labels);
+        ren.dropSomeForEntity(Entities.expresses);
     }
 }

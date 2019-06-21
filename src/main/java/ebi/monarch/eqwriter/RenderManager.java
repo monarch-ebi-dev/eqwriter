@@ -16,6 +16,7 @@ public class RenderManager {
     private OWLObjectRenderer renManchester = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 
     private Map<OWLEntity, String> labels = new HashMap<>();
+    private Set<OWLEntity> dropsome = new HashSet<>();
     private Map<OWLEntity, String> descriptions = new HashMap<>();
     private OWLDataFactory df = OWLManager.getOWLDataFactory();
 
@@ -133,6 +134,20 @@ public class RenderManager {
 
     public void updateLabels(Map<OWLEntity, String> s) {
         labels.putAll(s);
+    }
+
+    public void dropSomeForEntity(OWLObjectProperty e) {
+        dropsome.add(e);
+    }
+
+    public String dropSomeFromDefinition(String def, Set<OWLObjectProperty> properties) {
+        String defn = def;
+        for(OWLObjectProperty op:properties) {
+            if(dropsome.contains(op)) {
+                defn = defn.replaceAll(getLabel(op)+" some",getLabel(op));
+            }
+        }
+        return defn;
     }
 
 }

@@ -24,15 +24,25 @@ public class EQWriter {
             if(label_mappings.exists()) {
                 List<String> mappings = FileUtils.readLines(label_mappings,"utf-8");
                 for(String s:mappings) {
-                    if(s.trim().startsWith("http") && s.chars().filter(ch -> ch == ',').count() == 1) {
-                        String iri = s.split(",")[0].trim();
-                        String label = s.split(",")[1].trim();
+                    if(s.trim().startsWith("http") && s.chars().filter(ch -> ch == ',').count() >= 1) {
+                        String[] vals = s.split(",");
+                        String iri = vals[0].trim();
+                        String label = vals[1].trim();
                         for(OWLEntity e:o.getSignature()) {
                             if(e.getIRI().toString().equals(iri)) {
                                 newLabels.put(e,label);
+                                if(vals.length>2) {
+                                    if(e instanceof OWLObjectProperty) {
+                                        boolean drop_some = vals[2].trim().equals("drop-some");
+                                        if (drop_some) {
+                                            RenderManager.getInstance().dropSomeForEntity((OWLObjectProperty)e);
+                                        }
+                                    }
+                                }
                                 i++;
                             }
                         }
+
                     }
                 }
             }
@@ -46,13 +56,13 @@ public class EQWriter {
 
     public static void main(String[] args) throws IOException {
 
-        /*args = new String[5];
+        args = new String[5];
         args[0] = "/data/fbbt.owl";
         args[1] = "/ws/drosophila-anatomy-developmental-ontology/src/ontology/auto_defined_classes.txt";
         args[2] = "flybase";
         args[3] = "/data/test_template.tsv";
         args[4] = "/data/label_mappingss.txt";
-*/
+
         String ontology_in = args[0];
         File entities_list = new File(args[1]);
         String style = args[2];
