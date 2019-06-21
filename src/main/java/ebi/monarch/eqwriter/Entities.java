@@ -19,4 +19,15 @@ public class Entities {
     public static final OWLClass c_quality=df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/PATO_0000001"));
     public static final OWLClass upheno = df.getOWLClass(IRI.create("http://purl.obolibrary.org/obo/UPHENO_0001002"));
 
+    public static final OWLObjectProperty has_function_in = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/fbbt#has_function_in"));
+    public static final OWLObjectProperty releases_neurotransmitter = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/fbbt#releases_neurotransmitter"));
+    //public static final OWLObjectProperty dendrite_innervates = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/BFO_0000051"));
+    //public static final OWLObjectProperty axon_innervates = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/BFO_0000051"));
+    public static final OWLObjectProperty innervates = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002134"));
+    public static final OWLObjectProperty electrically_synapsed_to = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002003"));
+    public static final OWLObjectProperty develops_from = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002202"));
+    public static final OWLObjectProperty develops_directly_from = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002207"));
+    public static final OWLObjectProperty connected_to = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002150"));
+    public static final OWLObjectProperty fasciculates_with = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002101"));
+
 }

@@ -2,3 +2,4 @@
 eqwriter.iml
 *.class
 target
+.DS_Store

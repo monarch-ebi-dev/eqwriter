@@ -126,4 +126,13 @@ public class RenderManager {
     public String getDescription(OWLClass k) {
         return descriptions.get(k) == null ? "No description" : descriptions.get(k);
     }
+
+    public void updateLabel(OWLEntity e, String s) {
+        labels.put(e,s);
+    }
+
+    public void updateLabels(Map<OWLEntity, String> s) {
+        labels.putAll(s);
+    }
+
 }

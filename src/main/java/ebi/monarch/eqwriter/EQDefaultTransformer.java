@@ -4,12 +4,17 @@ import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class EQDefaultTransformer implements ClassExpressionToStringTransformer {
 
     OWLDataFactory df = OWLManager.getOWLDataFactory();
     RenderManager ren = RenderManager.getInstance();
+
+    EQDefaultTransformer(Map<OWLEntity, String> newLabels) {
+        ren.updateLabels(newLabels);
+    }
 
     @Override
     public String createDefinition(OWLClassExpression ce) {

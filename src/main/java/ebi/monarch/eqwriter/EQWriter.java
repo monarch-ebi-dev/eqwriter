@@ -12,34 +12,54 @@ public class EQWriter {
 
     OWLOntologyManager man = OWLManager.createOWLOntologyManager();
     OWLDataFactory df = man.getOWLDataFactory();
+    Map<OWLEntity,String> newLabels = new HashMap<>();
     OWLOntology o;
 
-    public EQWriter(String ontology_in) {
+    public EQWriter(String ontology_in, File label_mappings) {
         try {
             o = man.loadOntologyFromOntologyDocument(new File(ontology_in));
             RenderManager.getInstance().addLabel(o);
+            int i = 0;
+
+            if(label_mappings.exists()) {
+                List<String> mappings = FileUtils.readLines(label_mappings,"utf-8");
+                for(String s:mappings) {
+                    if(s.trim().startsWith("http") && s.chars().filter(ch -> ch == ',').count() == 1) {
+                        String iri = s.split(",")[0].trim();
+                        String label = s.split(",")[1].trim();
+                        for(OWLEntity e:o.getSignature()) {
+                            if(e.getIRI().toString().equals(iri)) {
+                                newLabels.put(e,label);
+                                i++;
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println("EQ Writer created, "+i+" custom labels updated.");
         } catch (OWLOntologyCreationException e) {
             throw new IllegalStateException("Ontology could not be loaded!",e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Mappings file cannot be parsed!",e);
         }
     }
 
     public static void main(String[] args) throws IOException {
 
-        args = new String[4];
-        args[0] = "/data/hp.owl";
-        args[1] = "/data/test_iris.txt";
-        args[2] = "eq_default";
+        /*args = new String[5];
+        args[0] = "/data/fbbt.owl";
+        args[1] = "/ws/drosophila-anatomy-developmental-ontology/src/ontology/auto_defined_classes.txt";
+        args[2] = "flybase";
         args[3] = "/data/test_template.tsv";
-
-
-
-
+        args[4] = "/data/label_mappingss.txt";
+*/
         String ontology_in = args[0];
         File entities_list = new File(args[1]);
         String style = args[2];
         File robot_template = new File(args[3]);
+        File label_mappings = new File(args[4]);
 
-        EQWriter eq = new EQWriter(ontology_in);
+        EQWriter eq = new EQWriter(ontology_in, label_mappings);
         eq.rewrite(entities_list, style, robot_template);
     }
 
@@ -86,9 +106,13 @@ public class EQWriter {
 
         switch(style) {
             case "eq_default":
-                transformer = new EQDefaultTransformer();
+                transformer = new EQDefaultTransformer(newLabels);
+                break;
+            case "flybase":
+                transformer = new FlyBaseAnatomyTransformer(newLabels);
+                break;
             default:
-                transformer = new EQDefaultTransformer();
+                transformer = new DefaultTransformer(newLabels);
         }
         return transformer;
     }
