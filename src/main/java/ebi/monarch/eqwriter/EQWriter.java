@@ -56,12 +56,15 @@ public class EQWriter {
 
     public static void main(String[] args) throws IOException {
 
+        /*
         args = new String[5];
         args[0] = "/data/fbbt.owl";
         args[1] = "/ws/drosophila-anatomy-developmental-ontology/src/ontology/auto_defined_classes.txt";
         args[2] = "flybase";
         args[3] = "/data/test_template.tsv";
         args[4] = "/data/label_mappingss.txt";
+
+         */
 
         String ontology_in = args[0];
         File entities_list = new File(args[1]);
