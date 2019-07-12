@@ -7,6 +7,8 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.util.OWLObjectTransformer;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OntologyUtils {
 
@@ -100,6 +102,17 @@ public class OntologyUtils {
             return l;
         }
         return e.getIRI().getRemainder().or(e.getIRI().toString());
+    }
+
+    public static OWLClass extractClassFromSubPattern(String string) {
+        Pattern p = Pattern.compile("\\$sub[_][a-zA-Z]+[:][0-9]+");
+        Matcher m = p.matcher(string);
+        String def = string;
+        while (m.find()) {
+            OWLClass e = df.getOWLClass(IRI.create(Entities.OBOIRI+m.group(0).replaceAll("\\$sub[_]","").trim().replaceAll(":","_")));
+            return e;
+        }
+        throw new IllegalArgumentException(string+ "does not contain legal sub pattern!");
     }
 
 

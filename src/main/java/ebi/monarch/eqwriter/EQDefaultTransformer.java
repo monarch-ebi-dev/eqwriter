@@ -12,7 +12,7 @@ public class EQDefaultTransformer implements ClassExpressionToStringTransformer 
     OWLDataFactory df = OWLManager.getOWLDataFactory();
     RenderManager ren = RenderManager.getInstance();
 
-    EQDefaultTransformer(Map<OWLEntity, String> newLabels) {
+    EQDefaultTransformer(Map<OWLEntity, String> newLabels, OWLOntology o) {
         ren.updateLabels(newLabels);
     }
 
@@ -27,7 +27,11 @@ public class EQDefaultTransformer implements ClassExpressionToStringTransformer 
                 }
             }
         }
-        return ren.renderHumanReadable(ce);
+        String def = ren.renderHumanReadable(ce);
+        if(!def.endsWith(".") && !def.endsWith(".'") &&  !def.endsWith(".\"")) {
+            def = def +".";
+        }
+        return def;
     }
 
 

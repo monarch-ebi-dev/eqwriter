@@ -1,13 +1,11 @@
 package ebi.monarch.eqwriter;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.*;
 
 public class Entities {
     private static final OWLDataFactory df = OWLManager.getOWLDataFactory();
+    public static String OBOIRI = "http://purl.obolibrary.org/obo/";
     public static final OWLObjectProperty op_inheresinpartof = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002314"));
     public static final OWLObjectProperty op_inheresin = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0000052"));
 
@@ -31,6 +29,8 @@ public class Entities {
     public static final OWLObjectProperty fasciculates_with = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002101"));
 
     public static final OWLObjectProperty expresses = df.getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/RO_0002292"));
+    public static final OWLAnnotationProperty ap_definition = df.getOWLAnnotationProperty(IRI.create("http://purl.obolibrary.org/obo/IAO_0000115"));
+    public static final OWLAnnotationProperty ap_dbxref = df.getOWLAnnotationProperty(IRI.create("http://www.geneontology.org/formats/oboInOwl#hasDbXref"));
 
 
 }

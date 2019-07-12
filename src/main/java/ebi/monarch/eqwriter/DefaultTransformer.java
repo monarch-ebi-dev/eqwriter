@@ -11,13 +11,17 @@ public class DefaultTransformer implements ClassExpressionToStringTransformer {
 
     RenderManager ren = RenderManager.getInstance();
 
-    DefaultTransformer(Map<OWLEntity, String> newLabels) {
+    DefaultTransformer(Map<OWLEntity, String> newLabels, OWLOntology o) {
         ren.updateLabels(newLabels);
     }
 
 
     @Override
     public String createDefinition(OWLClassExpression ce) {
-        return ren.renderHumanReadable(ce);
+        String def = ren.renderHumanReadable(ce);
+        if(!def.endsWith(".") && !def.endsWith(".'") &&  !def.endsWith(".\"")) {
+            def = def +".";
+        }
+        return def;
     }
 }

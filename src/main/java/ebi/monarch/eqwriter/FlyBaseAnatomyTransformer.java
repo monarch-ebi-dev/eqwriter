@@ -11,7 +11,7 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
     OWLDataFactory df = OWLManager.getOWLDataFactory();
     RenderManager ren = RenderManager.getInstance();
 
-    FlyBaseAnatomyTransformer(Map<OWLEntity,String> labels) {
+    FlyBaseAnatomyTransformer(Map<OWLEntity, String> labels, OWLOntology o) {
         prepareLabels(labels);
     }
 
@@ -24,6 +24,9 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
             def = def.replace(clabel,clabel+" ("+c.getIRI().getShortForm().replaceAll("_",":")+")");
         }
         def = ren.dropSomeFromDefinition(def,ce.getObjectPropertiesInSignature());
+        if(!def.endsWith(".") && !def.endsWith(".'") &&  !def.endsWith(".\"")) {
+            def = def +".";
+        }
         return "Any "+def;
     }
 
