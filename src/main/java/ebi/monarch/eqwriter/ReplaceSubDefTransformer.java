@@ -29,11 +29,12 @@ public class ReplaceSubDefTransformer implements DefinitionRewriterTransformer  
             if(axiom.getProperty().equals(Entities.ap_definition)) {
                 if (axiom.getValue().asLiteral().isPresent()) {
                     String olddef = axiom.getValue().asLiteral().get().getLiteral();
-                    Set<OWLAnnotation> axiomAnnotations = new HashSet<>(axiom.getAnnotations());
                     //System.out.println(olddef);
                     try {
                         OWLClass e = OntologyUtils.extractClassFromSubPattern(olddef);
+                        boolean replacedAtLeastOne = false;
                         for(OWLAnnotationAssertionAxiom dbxref_entity : o.getAnnotationAssertionAxioms(e.getIRI())) {
+                            Set<OWLAnnotation> axiomAnnotations = new HashSet<>(axiom.getAnnotations());
                             if(dbxref_entity.getProperty().equals(Entities.ap_definition)) {
                                 OWLAnnotationValue value = dbxref_entity.getValue();
                                 if (value instanceof OWLLiteral) {
@@ -47,10 +48,19 @@ public class ReplaceSubDefTransformer implements DefinitionRewriterTransformer  
                                     }
                                     OWLAnnotationAssertionAxiom ax_out = df.getOWLAnnotationAssertionAxiom(Entities.ap_definition, c.getIRI(), df.getOWLLiteral(def), axiomAnnotations);
                                     axs.add(ax_out);
+                                    replacedAtLeastOne = true;
                                     break; // We only ever want 1 replacement definitions!
                                 }
 
                             }
+                        }
+                        if(!replacedAtLeastOne) {
+                            String def = "No description.";
+                            Set<OWLAnnotation> axiomAnnotations = new HashSet<>(axiom.getAnnotations());
+                            String curie = e.getIRI().toString().replaceAll(Entities.OBOIRI,"").replaceAll("_",":");
+                            axiomAnnotations.add(df.getOWLAnnotation(Entities.ap_dbxref,df.getOWLLiteral(curie)));
+                            OWLAnnotationAssertionAxiom ax_out = df.getOWLAnnotationAssertionAxiom(Entities.ap_definition, c.getIRI(), df.getOWLLiteral(def), axiomAnnotations);
+                            axs.add(ax_out);
                         }
 
                     } catch(IllegalArgumentException e) {

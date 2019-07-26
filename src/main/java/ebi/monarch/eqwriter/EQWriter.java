@@ -76,13 +76,13 @@ public class EQWriter {
         String style = args[2];
         File robot_template = new File(args[3]);
         File label_mappings = new File(args[4]);
-        boolean addSourceAnnotation = args.length>5&&args[5].equals("source_xref");
+        String addSourceAnnotation = args.length>5? args[5] : "NA" ;
 
         EQWriter eq = new EQWriter(ontology_in, label_mappings);
         eq.rewrite(entities_list, style, robot_template,addSourceAnnotation);
     }
 
-    private void rewrite(File entities_list, String style, File robot_template, boolean addSourceAnnotation) throws IOException {
+    private void rewrite(File entities_list, String style, File robot_template, String addSourceAnnotation) throws IOException {
         List<OWLClass> entities = getOwlClassesForRewritingDefs(entities_list);
         Transformer transformer = getTransformer(style, addSourceAnnotation);
         Set<OWLAnnotationAssertionAxiom> rewrittenDefinitions = new HashSet<>();
@@ -91,13 +91,17 @@ public class EQWriter {
             if (transformer instanceof DefinitionRewriterTransformer) {
                 rewrittenDefinitions.addAll(transformer.rewriteDefinitions(c));
             } else if (transformer instanceof ClassExpressionToStringTransformer) {
+                Set<OWLAnnotation> dotannotations = new HashSet<>();
+                if(addSourceAnnotation.equals("add_dot_refs")) {
+                    dotannotations.addAll(getDotDefinitionAnnotations(o.getAnnotationAssertionAxioms(c.getIRI())));
+                }
                 for (OWLAxiom axa : o.getAxioms(c,Imports.INCLUDED)) {
                     if (axa instanceof OWLEquivalentClassesAxiom) {
                         OWLEquivalentClassesAxiom ax = (OWLEquivalentClassesAxiom)axa;
                         for (OWLClassExpression ce : ax.getClassExpressionsAsList()) {
                             if (!getPropertiesInSignature(ce).isEmpty()) {
                                 String def = transformer.createDefinition(ce);
-                                OWLAnnotationAssertionAxiom ax_out = df.getOWLAnnotationAssertionAxiom(Entities.ap_definition, c.getIRI(), df.getOWLLiteral(def));
+                                OWLAnnotationAssertionAxiom ax_out = df.getOWLAnnotationAssertionAxiom(Entities.ap_definition, c.getIRI(), df.getOWLLiteral(def), dotannotations);
                                 rewrittenDefinitions.add(ax_out);
                             }
                         }
@@ -106,6 +110,21 @@ public class EQWriter {
             }
         }
         exportOWL(robot_template, rewrittenDefinitions);
+    }
+
+    private Set<OWLAnnotation> getDotDefinitionAnnotations(Set<OWLAnnotationAssertionAxiom> annotationAssertionAxioms) {
+        Set<OWLAnnotation> dotannotations = new HashSet<>();
+        for(OWLAnnotationAssertionAxiom axiom:annotationAssertionAxioms) {
+            if(axiom.getProperty().equals(Entities.ap_definition)) {
+                if (axiom.getValue().asLiteral().isPresent()) {
+                    String olddef = axiom.getValue().asLiteral().get().getLiteral();
+                    if (olddef.equals(".")) {
+                        dotannotations.addAll(axiom.getAnnotations());
+                    }
+                }
+            }
+        }
+        return dotannotations;
     }
 
     private void exportOWL(File robot_template, Set<OWLAnnotationAssertionAxiom> rewrittenDefinitions) throws FileNotFoundException {
@@ -142,7 +161,7 @@ public class EQWriter {
         return entities;
     }
 
-    private Transformer getTransformer(String style, boolean addSourceAnnotation) {
+    private Transformer getTransformer(String style, String addSourceAnnotation) {
         Transformer transformer;
 
         switch(style) {
@@ -153,7 +172,7 @@ public class EQWriter {
                 transformer = new FlyBaseAnatomyTransformer(newLabels,o);
                 break;
             case "sub_external":
-                transformer = new ReplaceSubDefTransformer(newLabels,o,addSourceAnnotation);
+                transformer = new ReplaceSubDefTransformer(newLabels,o,addSourceAnnotation.equals("source_xref"));
                 break;
             default:
                 transformer = new DefaultTransformer(newLabels,o);
