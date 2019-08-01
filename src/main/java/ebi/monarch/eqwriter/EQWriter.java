@@ -60,16 +60,16 @@ public class EQWriter {
 
     public static void main(String[] args) throws IOException {
 
-    /*
+/*
         args = new String[6];
-        args[0] = "/ws/flybase-controlled-vocabulary/src/ontology/tmp/merged-source-pre.owl";
-        args[1] = "/ws/flybase-controlled-vocabulary/src/ontology/auto_generated_definitions_seed_sub.txt";
+        args[0] = "/ws/drosophila-anatomy-developmental-ontology/src/ontology/tmp/merged-source-pre.owl";
+        args[1] = "/ws/drosophila-anatomy-developmental-ontology/src/ontology/auto_generated_definitions_seed_dot.txt";
         args[2] = "flybase";
         args[3] = "/data/test_template.owl";
         args[4] = "na";
-        args[5] = "source_xref";
-        */
+        args[5] = "add_dot_refs";
 
+*/
 
         String ontology_in = args[0];
         File entities_list = new File(args[1]);
@@ -92,7 +92,7 @@ public class EQWriter {
                 rewrittenDefinitions.addAll(transformer.rewriteDefinitions(c));
             } else if (transformer instanceof ClassExpressionToStringTransformer) {
                 Set<OWLAnnotation> dotannotations = new HashSet<>();
-                if(addSourceAnnotation.equals("add_dot_refs")) {
+                if(addSourceAnnotation.contains("add_dot_refs")) {
                     dotannotations.addAll(getDotDefinitionAnnotations(o.getAnnotationAssertionAxioms(c.getIRI())));
                 }
                 for (OWLAxiom axa : o.getAxioms(c,Imports.INCLUDED)) {
@@ -100,6 +100,7 @@ public class EQWriter {
                         OWLEquivalentClassesAxiom ax = (OWLEquivalentClassesAxiom)axa;
                         for (OWLClassExpression ce : ax.getClassExpressionsAsList()) {
                             if (!getPropertiesInSignature(ce).isEmpty()) {
+                                //System.out.println(c);
                                 String def = transformer.createDefinition(ce);
                                 OWLAnnotationAssertionAxiom ax_out = df.getOWLAnnotationAssertionAxiom(Entities.ap_definition, c.getIRI(), df.getOWLLiteral(def), dotannotations);
                                 rewrittenDefinitions.add(ax_out);

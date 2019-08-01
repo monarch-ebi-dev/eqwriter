@@ -40,7 +40,7 @@ public class RenderManager {
 
     private String hackLabel(OWLEntity e,String l) {
         if(e.equals(df.getOWLThing())) {
-            return replaceIRIWithLabel(l, df.getOWLThing(), "Thing");
+            return replaceIRIWithLabel(l, df.getOWLThing(), "Thing",true);
         } else {
             return l;
         }
@@ -54,22 +54,26 @@ public class RenderManager {
         String s = ren.render(ax);
         for (OWLEntity k : ax.getSignature()) {
             String l = getLabel(k);
-            s = replaceIRIWithLabel(s, k, l);
+            s = replaceIRIWithLabel(s, k, l, false);
         }
         return s;
     }
 
-    public String renderManchester(OWLObject ax) {
-        String s = renManchester.render(ax);
+    public String renderManchester(OWLObject ax, boolean quote) {
+        String s = renManchester.render(ax).replaceAll("[()']", "");
         for (OWLEntity k : ax.getSignature()) {
             String l = getLabel(k);
-            s = replaceIRIWithLabel(s, k, l);
+            s = replaceIRIWithLabel(s, k, l, quote);
         }
         return s;
     }
 
-    private String replaceIRIWithLabel(String s, OWLEntity k, String l) {
-        return s.replaceAll(k.getIRI().getRemainder().or(""), "'"+l+"'");
+    private String replaceIRIWithLabel(String s, OWLEntity k, String l, boolean quote) {
+        if(quote) {
+            return s.replaceAll(k.getIRI().getRemainder().or(""), "'" + l + "'");
+        } else {
+            return s.replaceAll(k.getIRI().getRemainder().or(""), l);
+        }
     }
 
     public String getLabel(OWLEntity k) {
@@ -77,11 +81,11 @@ public class RenderManager {
     }
 
     public String renderForMarkdown(OWLObject ax) {
-        return renderManchester(ax).replaceAll("(\n|\r\n|\r)", "  \n");
+        return renderManchester(ax,true).replaceAll("(\n|\r\n|\r)", "  \n");
     }
 
     public String renderHumanReadable(OWLObject ax) {
-        return renderManchester(ax).replaceAll("(\n|\r\n|\r)", " ").replaceAll("[^a-zA-Z0-9 ]", " ").trim().replaceAll(" +"," ");
+        return renderManchester(ax,false).replaceAll("(\n|\r\n|\r)", " ").trim().replaceAll(" +"," ");
     }
 
     public void renderTreeForMarkdown(OWLClass c, OWLReasoner r, List<String> sb, int level, Set<OWLEntity> k, Map<OWLClass,OWLClassExpression> g, Set<OWLClass> u) {
