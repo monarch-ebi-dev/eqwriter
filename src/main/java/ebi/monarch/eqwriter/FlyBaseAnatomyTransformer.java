@@ -37,7 +37,7 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
 
         for(String clabel:labels) {
             OWLEntity c = mapLabelClass.get(clabel);
-            String replacement = clabel+" ("+c.getIRI().getShortForm().replaceAll("_",":")+")";
+            String replacement = clabel.replaceAll("_"," ")+" ("+c.getIRI().getShortForm().replaceAll("_",":")+")";
             String id = c.getIRI().toString();
             mapStringEncoded.put(id,replacement);
             def = def.replace(clabel,id);
@@ -47,7 +47,11 @@ public class FlyBaseAnatomyTransformer implements ClassExpressionToStringTransfo
             def = def.replace(id,mapStringEncoded.get(id));
         }
         def = ren.dropSomeFromDefinition(def,ce.getObjectPropertiesInSignature());
-        def = def.replaceAll("biological_process","biological process").replaceAll("capable_of","capable of");
+        for(OWLObjectProperty p:ce.getObjectPropertiesInSignature()) {
+            String plabel = ren.getLabel(p);
+            def = def.replace(plabel,plabel.replaceAll("_"," "));
+        }
+
         if(!def.endsWith(".") && !def.endsWith(".'") &&  !def.endsWith(".\"")) {
             def = def +".";
         }
